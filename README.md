@@ -153,6 +153,8 @@ PulseTrack includes automated unit and widget tests to verify business logic and
 ## 8. Graded Deliverables Summary
 
 * **Public Repository:** [GitHub - RobertNiyonkuru98/pulsetrack_14](https://github.com/RobertNiyonkuru98/pulsetrack_14)
+* **Figma Design Specification:** [Figma - PulseTrack_14](https://www.figma.com/design/BSZEuY95h2EebFMCprPVBY/PulseTrack_14?node-id=0-1&t=anfeM8bhKZtn3kw9-1)
+* **Group Contribution Tracker:** [Google Sheet - Group 14 Contribution Tracker](https://docs.google.com/spreadsheets/d/1RouF3blnE4xgItQrqiC9bQpY1jUQK319lSEOJKKXtWU/edit?usp=sharing)
 * **Branch Structure:** Clear individual branches with distributed commit histories across development days.
 * **Screens Built:** 10 functional screens matching the Figma specification (`PulseTrack_14`).
 * **Persistence Verified:** All data survives closing and restarting the application.
