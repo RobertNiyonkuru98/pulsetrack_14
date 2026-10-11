@@ -130,12 +130,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             children: [
               const Icon(Icons.access_time_rounded, size: 14, color: Colors.white70),
               const SizedBox(width: 6),
-              Text(
-                '${task.dueDate.day} ${_monthName(task.dueDate.month)} • Due Date',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  '${task.dueDate.day} ${_monthName(task.dueDate.month)} • Due Date',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -412,28 +416,32 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'PRIORITY',
-                                        style: TextStyle(
-                                          color: Color(0xFF991B1B),
-                                          fontSize: 9.5,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.6,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'PRIORITY',
+                                          style: TextStyle(
+                                            color: Color(0xFF991B1B),
+                                            fontSize: 9.5,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.6,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        task.priority.label,
-                                        style: const TextStyle(
-                                          color: Color(0xFFDC2626),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w800,
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          task.priority.label,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Color(0xFFDC2626),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   const Icon(Icons.priority_high_rounded, size: 16, color: Color(0xFFDC2626)),
                                 ],
@@ -452,31 +460,38 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'STATUS',
-                                        style: TextStyle(
-                                          color: Color(0xFF92400E),
-                                          fontSize: 9.5,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 0.6,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'STATUS',
+                                          style: TextStyle(
+                                            color: Color(0xFF92400E),
+                                            fontSize: 9.5,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.6,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        task.status.label,
-                                        style: const TextStyle(
-                                          color: Color(0xFFB45309),
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          task.status.label,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Color(0xFFB45309),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   PopupMenuButton<TaskStatus>(
-                                    icon: const Icon(Icons.arrow_drop_down_rounded, size: 20, color: Color(0xFFB45309)),
+                                    // `child`, not `icon`: the icon path builds an
+                                    // IconButton, which enforces a 48px minimum width
+                                    // and is what pushed this row past the tile.
+                                    child: const Icon(Icons.arrow_drop_down_rounded, size: 20, color: Color(0xFFB45309)),
                                     onSelected: (newStatus) {
                                       state.changeTaskStatus(task, newStatus);
                                     },
@@ -514,19 +529,25 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(slaIcon, color: slaTextColor, size: 20),
-                          const SizedBox(width: 8),
-                          Text(
-                            'SLA Status',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: slaTextColor,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Icon(slaIcon, color: slaTextColor, size: 20),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                'SLA Status',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: slaTextColor,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -573,19 +594,25 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.access_time_rounded, size: 14, color: slaTextColor),
-                          const SizedBox(width: 6),
-                          Text(
-                            deadlineText,
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w600,
-                              color: slaTextColor,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Icon(Icons.access_time_rounded, size: 14, color: slaTextColor),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                deadlineText,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: slaTextColor,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
