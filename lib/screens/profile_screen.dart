@@ -178,6 +178,13 @@ class _ProfileBody extends StatelessWidget {
           subtitle: 'Everything that happened recently',
           onTap: () => Navigator.pushNamed(context, Routes.activity),
         ),
+        _gap(10),
+        _ActionTile(
+          icon: Icons.insights,
+          label: 'Insights',
+          subtitle: 'SLA breakdown, breaches and deadlines',
+          onTap: () => Navigator.pushNamed(context, Routes.insights),
+        ),
         _gap(24),
         _resetButton(onReset),
         _gap(10),
