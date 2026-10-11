@@ -99,7 +99,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   const SizedBox(width: 100, child: Text('Assign To', style: TextStyle(fontWeight: FontWeight.bold))),
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: _assigneeId.isNotEmpty ? _assigneeId : null,
+                      initialValue: _assigneeId.isNotEmpty ? _assigneeId : null,
                       decoration: const InputDecoration(border: OutlineInputBorder()),
                       items: state.members.map((m) => DropdownMenuItem(value: m.id, child: Text(m.name))).toList(),
                       onChanged: (val) => setState(() => _assigneeId = val!),
@@ -143,7 +143,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   const SizedBox(width: 100, child: Text('Priority', style: TextStyle(fontWeight: FontWeight.bold))),
                   Expanded(
                     child: DropdownButtonFormField<Priority>(
-                      value: _priority,
+                      initialValue: _priority,
                       decoration: const InputDecoration(border: OutlineInputBorder()),
                       items: Priority.values.map((p) => DropdownMenuItem(value: p, child: Text(p.label))).toList(),
                       onChanged: (val) => setState(() => _priority = val!),
@@ -160,7 +160,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   const SizedBox(width: 100, child: Text('Status', style: TextStyle(fontWeight: FontWeight.bold))),
                   Expanded(
                     child: DropdownButtonFormField<TaskStatus>(
-                      value: _status,
+                      initialValue: _status,
                       decoration: const InputDecoration(border: OutlineInputBorder()),
                       items: TaskStatus.values.map((s) => DropdownMenuItem(value: s, child: Text(s.label))).toList(),
                       onChanged: (val) => setState(() => _status = val!),
