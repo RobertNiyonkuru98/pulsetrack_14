@@ -104,13 +104,13 @@ We chose `Provider` with a single `AppState` (`ChangeNotifier`).
 
 ## 5. Team Ownership & Git Collaboration
 
-To prevent merge conflicts during concurrent development, we enforced a strict **one file, one owner** policy. Robert froze the core models, database layer, and routing structure first. All members then developed their assigned screens on dedicated feature branches.
+To prevent merge conflicts during concurrent development, we enforced a strict **one file, one owner** policy. Robert built the base database, models, and router on `main` first. Each member then worked exclusively on their assigned screens in their own feature branch.
 
-| Team Member | Role | Assigned Files & Responsibilities | Git Branch |
+| Team Member | Official Role | Assigned Screens & Files | Git Branch |
 |---|---|---|---|
-| **Tony Robert** | Lead System Architect | Architecture skeleton, SQLite layer, SLA mathematical engine, Dashboard, Insights screen, Unit tests | `feat/robert-skeleton` |
-| **Gideon** | Mobile Frontend Engineer | Core Task Journey: `task_list_screen.dart`, `task_details_screen.dart`, `task_form_screen.dart`, `task_tile.dart`, Form validation tests, Figma redesign | `feature/gideon-tasks-ui` |
-| **Admire** | Product Designer & Engineer | `sign_in_screen.dart`, `team_members_screen.dart`, `member_detail_screen.dart`, `profile_screen.dart`, `activity_log_screen.dart`, Seed data, Shared badge widgets | `admire_tasks-ui` |
+| **Robert Tony Mitali Niyonkuru** (`r.niyonkuru@alustudent.com`) | Lead System Architect & Core Engine Specialist | Base skeleton, SQLite helper, SLA engine math, Dashboard, Insights screen, Unit tests | `feat/robert-skeleton` |
+| **Olowoyo Erioluwa Gideon** (`e.olowoyo@alustudent.com`) | Mobile Frontend Engineer | Core Task Journey: `task_list_screen.dart`, `task_details_screen.dart`, `task_form_screen.dart`, `task_tile.dart`, Form validation tests, Figma UI overhaul | `feature/gideon-tasks-ui` |
+| **Admire Kudakwashe Chagaresango** (`a.chagaresa@alustudent.com`) | Product Designer & Supporting Flows Engineer | `sign_in_screen.dart`, `team_members_screen.dart`, `member_detail_screen.dart`, `profile_screen.dart`, `activity_log_screen.dart`, Seed data, Shared badge widgets | `admire_tasks-ui` |
 
 ---
 
@@ -153,6 +153,8 @@ PulseTrack includes automated unit and widget tests to verify business logic and
 ## 8. Graded Deliverables Summary
 
 * **Public Repository:** [GitHub - RobertNiyonkuru98/pulsetrack_14](https://github.com/RobertNiyonkuru98/pulsetrack_14)
+* **Figma Design Specification:** [Figma - PulseTrack_14](https://www.figma.com/design/BSZEuY95h2EebFMCprPVBY/PulseTrack_14?node-id=0-1&t=anfeM8bhKZtn3kw9-1)
+* **Group Contribution Tracker:** [Google Sheet - Group 14 Contribution Tracker](https://docs.google.com/spreadsheets/d/1RouF3blnE4xgItQrqiC9bQpY1jUQK319lSEOJKKXtWU/edit?usp=sharing)
 * **Branch Structure:** Clear individual branches with distributed commit histories across development days.
 * **Screens Built:** 10 functional screens matching the Figma specification (`PulseTrack_14`).
 * **Persistence Verified:** All data survives closing and restarting the application.
