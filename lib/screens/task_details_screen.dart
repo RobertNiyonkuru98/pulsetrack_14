@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../data/models/sla_status.dart';
 import '../data/models/task.dart';
 import '../routes.dart';
 import '../state/app_state.dart';
