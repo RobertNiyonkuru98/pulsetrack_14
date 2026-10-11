@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Figma exports - design reference only, never shipped in the repo
+docs/figma/

@@ -15,7 +15,7 @@ class AppTheme {
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.background,
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         foregroundColor: AppColors.ink,
         elevation: 0,
         centerTitle: false,
@@ -53,10 +53,18 @@ class AppTheme {
     );
   }
 
-  /// The outline used by every card in the app (16px radius, 1px border).
+  /// The card used across the app. Figma draws cards as pure white with a
+  /// generous corner radius and a soft shadow - no outline - which is what lets
+  /// them float on the warm off-white page background.
   static BoxDecoration get cardDecoration => BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(
+            color: Color(0x0F1C1B1B),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
       );
 }

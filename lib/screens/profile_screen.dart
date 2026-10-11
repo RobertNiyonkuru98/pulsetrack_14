@@ -80,8 +80,12 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-/// A vertical gap, so layouts read like "header, gap, stats, gap, tiles".
-Widget _gap([double height = 16]) => SizedBox(height: height);
+/// A spacer that works in both directions: `size` wide inside a Row and `size`
+/// tall inside a Column, so the same helper reads the same way in either layout.
+///
+/// It must set **both** dimensions. A `SizedBox(height: n)` has a width of zero,
+/// so using one for horizontal spacing silently butts two widgets together.
+Widget _gap([double size = 16]) => SizedBox(width: size, height: size);
 
 void _toast(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
@@ -173,6 +177,13 @@ class _ProfileBody extends StatelessWidget {
           label: 'Activity Log',
           subtitle: 'Everything that happened recently',
           onTap: () => Navigator.pushNamed(context, Routes.activity),
+        ),
+        _gap(10),
+        _ActionTile(
+          icon: Icons.insights,
+          label: 'Insights',
+          subtitle: 'SLA breakdown, breaches and deadlines',
+          onTap: () => Navigator.pushNamed(context, Routes.insights),
         ),
         _gap(24),
         _resetButton(onReset),
