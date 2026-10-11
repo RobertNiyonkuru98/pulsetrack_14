@@ -15,10 +15,18 @@ class DonutSlice {
 
 /// A donut chart drawn with a CustomPainter - no charting dependency needed.
 class DonutChart extends StatelessWidget {
-  const DonutChart({super.key, required this.slices, this.size = 140});
+  const DonutChart({
+    super.key,
+    required this.slices,
+    this.size = 140,
+    this.centerLabel,
+  });
 
   final List<DonutSlice> slices;
   final double size;
+
+  /// Optional small caption under the total in the middle (e.g. "Tasks").
+  final String? centerLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +49,23 @@ class DonutChart extends StatelessWidget {
       child: CustomPaint(
         painter: _DonutPainter(slices: slices, total: total),
         child: Center(
-          child: Text(
-            total.toInt().toString(),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppColors.ink,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                total.toInt().toString(),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.ink,
+                ),
+              ),
+              if (centerLabel != null)
+                Text(
+                  centerLabel!,
+                  style: const TextStyle(fontSize: 11, color: AppColors.muted),
+                ),
+            ],
           ),
         ),
       ),
@@ -79,7 +97,7 @@ class _DonutPainter extends CustomPainter {
         ..color = slice.color
         ..style = PaintingStyle.stroke
         ..strokeWidth = stroke
-        ..strokeCap = StrokeCap.butt;
+        ..strokeCap = StrokeCap.round;
       canvas.drawArc(rect, start, sweep, false, paint);
       start += sweep;
     }
