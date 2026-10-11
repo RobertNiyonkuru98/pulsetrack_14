@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../data/models/member.dart';
 import '../data/models/task.dart';
 import '../state/app_state.dart';
 
@@ -84,8 +83,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       DateTime.now().month,
       DateTime.now().day,
     ));
-
-    final Member? selectedAssignee = state.memberById(_assigneeId);
 
     return Scaffold(
       backgroundColor: Colors.white,

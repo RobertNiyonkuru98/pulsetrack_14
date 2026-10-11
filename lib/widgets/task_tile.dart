@@ -140,7 +140,7 @@ class TaskTile extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: cardBorder, width: 1),
                       ),
@@ -159,7 +159,7 @@ class TaskTile extends StatelessWidget {
                       height: 28,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                       ),
                       child: const Icon(
                         Icons.more_horiz,
@@ -203,7 +203,7 @@ class TaskTile extends StatelessWidget {
                 // Divider line inside card
                 Container(
                   height: 1,
-                  color: cardBorder.withOpacity(0.7),
+                  color: cardBorder.withValues(alpha: 0.7),
                 ),
                 const SizedBox(height: 12),
 

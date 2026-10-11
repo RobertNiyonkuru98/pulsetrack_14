@@ -7,7 +7,6 @@ import '../data/models/task.dart';
 import '../logic/sla_engine.dart';
 import '../routes.dart';
 import '../state/app_state.dart';
-import '../theme/app_colors.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   const TaskDetailsScreen({super.key, this.taskId});
@@ -564,7 +563,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     child: LinearProgressIndicator(
                       value: elapsedRatio,
                       minHeight: 8,
-                      backgroundColor: Colors.white.withOpacity(0.6),
+                      backgroundColor: Colors.white.withValues(alpha: 0.6),
                       valueColor: AlwaysStoppedAnimation<Color>(slaBadgeBg),
                     ),
                   ),
@@ -590,7 +589,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: slaCardBorder),
                         ),

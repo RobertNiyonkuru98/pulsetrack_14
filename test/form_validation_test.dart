@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:pulsetrack_14/screens/task_form_screen.dart';
-import 'package:pulsetrack_14/state/app_state.dart';
+import 'package:pulsetrack/screens/task_form_screen.dart';
+import 'package:pulsetrack/state/app_state.dart';
 
 void main() {
   testWidgets('TaskFormScreen shows validation error when title is empty', (WidgetTester tester) async {
@@ -26,8 +26,14 @@ void main() {
     // Clear the title field (it should be empty by default anyway)
     await tester.enterText(find.byType(TextFormField).first, '');
     
-    // Tap the Create Task button
-    await tester.tap(find.text('Create Task'));
+    // Tap the Create Task button. Two things to handle: the screen also has a
+    // "Create Task" header (so target the button, not the bare text), and the
+    // button sits below the fold in the default 800x600 test viewport (so scroll
+    // to it first - otherwise the tap misses and validation never runs).
+    final Finder submit = find.widgetWithText(ElevatedButton, 'Create Task');
+    await tester.ensureVisible(submit);
+    await tester.pumpAndSettle();
+    await tester.tap(submit);
     
     // Pump the widget to trigger validation
     await tester.pumpAndSettle();
