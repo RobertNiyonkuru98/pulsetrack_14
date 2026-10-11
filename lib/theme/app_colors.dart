@@ -70,4 +70,31 @@ class AppColors {
   // ----------------------------------------------------------------- alerts
   /// The red dot on the notification bell.
   static const Color danger = Color(0xFFBA1C1C);
+
+  // ------------------------------------------- names Admire's screens use
+  // His profile / activity / sign-in / team screens reference these. The four
+  // *Text tones are deliberately the SAME values as the *Ink tones above - one
+  // tone per status, just the name his files call it by.
+  static const Color onTrackText = onTrackInk;
+  static const Color atRiskText = atRiskInk;
+  static const Color overdueText = overdueInk;
+  static const Color completedText = completedInk;
+
+  /// Near-black, used behind the primary buttons on his screens.
+  static const Color black = Color(0xFF111111);
+
+  /// Neutral grey for inputs and inactive cards.
+  static const Color neutral = Color(0xFFEDEDED);
+
+  /// Sky blue, used for the soft accents on his profile stat tiles.
+  static const Color sky = Color(0xFF7FCBFF);
+
+  /// Avatar tints, cycled by member so a column of people reads as distinct.
+  static const List<Color> avatarPalette = <Color>[
+    Color(0xFFF5C4B3),
+    Color(0xFFB5D4F4),
+    Color(0xFFC0DD97),
+    Color(0xFFF4C0D1),
+    Color(0xFFCECBF6),
+  ];
 }

@@ -22,8 +22,12 @@ import 'package:pulsetrack/state/app_state.dart';
 /// inside a Row silently collapsed and butted two widgets together - which is
 /// what made the Activity Log read "Completed2d ago".
 ///
-/// These tests measure the real painted geometry, so they fail on the old helper
-/// and pass on a helper that sets both dimensions.
+/// These tests measure the real painted geometry, so they fail on a helper that
+/// only sets a height and pass on one that sets both dimensions.
+///
+/// The finders below follow Admire's redesigned Profile and Activity Log: his
+/// stat tiles carry no icon, and his activity rows lead with a 40px icon circle
+/// rather than a bordered avatar.
 class _FakeMembers extends MemberRepository {
   _FakeMembers(this.items);
 
@@ -164,22 +168,23 @@ void main() {
     );
   });
 
-  testWidgets('Activity Log: the avatar is not welded to the message',
+  testWidgets('Activity Log: the row icon is not welded to the message',
       (WidgetTester tester) async {
     final AppState state = _state();
     await state.load();
     await _pump(tester, state, const ActivityLogScreen());
 
+    // The completed-tile icon leads the row; the message sits to its right.
     final double gap = _gapBetween(
       tester,
-      find.byType(CircleAvatar).first,
+      find.byIcon(Icons.check_circle_outline).first,
       find.text(_message),
     );
     expect(gap, greaterThanOrEqualTo(6),
-        reason: 'avatar and message are ${gap.toStringAsFixed(1)}px apart');
+        reason: 'row icon and message are ${gap.toStringAsFixed(1)}px apart');
   });
 
-  testWidgets('Profile: the stat tile icon is not welded to its numbers',
+  testWidgets('Profile: the stat tiles are not welded to each other',
       (WidgetTester tester) async {
     final AppState state = _state();
     await state.load();
@@ -187,14 +192,16 @@ void main() {
     await _pump(tester, state, const ProfileScreen());
 
     expect(tester.takeException(), isNull);
+    expect(find.text('Assigned'), findsOneWidget);
+    expect(find.text('Completed'), findsOneWidget);
 
     final double gap = _gapBetween(
       tester,
-      find.byIcon(Icons.list_alt),
-      find.text('Tasks assigned'),
+      find.text('Assigned'),
+      find.text('Completed'),
     );
     expect(gap, greaterThanOrEqualTo(6),
-        reason: 'icon and label are ${gap.toStringAsFixed(1)}px apart');
+        reason: 'adjacent stat tiles are ${gap.toStringAsFixed(1)}px apart');
   });
 
   testWidgets('Profile: the action row icon is not welded to its label',
@@ -207,7 +214,7 @@ void main() {
     final double gap = _gapBetween(
       tester,
       find.byIcon(Icons.tune),
-      find.text('SLA Rules'),
+      find.text('SLA rules'),
     );
     expect(gap, greaterThanOrEqualTo(6),
         reason: 'icon and label are ${gap.toStringAsFixed(1)}px apart');

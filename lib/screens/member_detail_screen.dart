@@ -9,15 +9,17 @@ import '../routes.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_theme.dart';
+import '../widgets/activity_tile.dart';
+import '../widgets/avatar_stack.dart';
+import '../widgets/circle_icon_button.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/sla_badge.dart';
 
 /// Member Detail. OWNER: Admire.
 ///
 /// Opened from the Team Members screen (Routes.memberDetail, arguments = the
-/// member id). Shows who the member,the SLA health of their tasks, their task list, and their slice
-/// of the activity trail.
-///
+/// member id).
+/// 
 class MemberDetailScreen extends StatelessWidget {
   const MemberDetailScreen({super.key, this.memberId});
 
@@ -36,7 +38,7 @@ class MemberDetailScreen extends StatelessWidget {
 
     final Member? member = state.memberById(memberId ?? '');
     if (member == null) {
-      return _notFound();
+      return _notFound(context);
     }
 
     // Everything this screen needs, in three plain variables.
@@ -46,62 +48,99 @@ class MemberDetailScreen extends StatelessWidget {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text(member.name)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: <Widget>[
-          _HeaderCard(member: member),
-          _gap(16),
-          _section(
-            title: 'SLA Overview',
-            child: _StatusRow(state: state, tasks: tasks),
-          ),
-          _gap(16),
-          _section(
-            title: 'Tasks (${tasks.length})',
-            child: tasks.isEmpty
-                ? const _MutedText('No tasks assigned to this member yet.')
-                : Column(children: _taskRows(context, state, tasks)),
-          ),
-          _gap(16),
-          _section(
-            title: 'Recent Activity',
-            child: trail.isEmpty
-                ? const _MutedText(
-                    'Nothing yet. Actions by this member appear here.',
-                  )
-                : Column(
-                    children: <Widget>[
-                      for (final Activity a in trail.take(5)) _TrailRow(activity: a),
-                    ],
-                  ),
-          ),
-        ],
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+          children: <Widget>[
+            _topBar(context),
+            _gap(12),
+            _HeaderCard(
+              member: member,
+              onAssign: () => Navigator.pushNamed(context, Routes.taskForm),
+            ),
+            _gap(24),
+            _heading('SLA overview'),
+            _gap(12),
+            _StatusRow(state: state, tasks: tasks),
+            _gap(24),
+            _heading('Assigned tasks (${tasks.length})'),
+            _gap(12),
+            if (tasks.isEmpty)
+              const _MutedText('No tasks assigned to this member yet.')
+            else
+              ..._taskCards(context, state, tasks),
+            _gap(12),
+            _heading('Recent activity'),
+            _gap(12),
+            if (trail.isEmpty)
+              const _MutedText('Nothing yet. Actions by this member appear here.')
+            else
+              for (final Activity a in trail.take(5)) ...<Widget>[
+                ActivityTile(activity: a, initials: member.initials),
+                _gap(10),
+              ],
+          ],
+        ),
       ),
     );
   }
 
-  // ============================================================== build pieces
+  // ============================================================== build
 
-  Scaffold _notFound() {
+  Widget _topBar(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        CircleIconButton(
+          icon: Icons.arrow_back,
+          tooltip: 'Back',
+          onPressed: () => Navigator.maybePop(context),
+        ),
+        const Expanded(
+          child: Text(
+            'Team member',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.ink),
+          ),
+        ),
+        // Keeps the title centred, same width as the back button.
+        const SizedBox(width: 44),
+      ],
+    );
+  }
+
+  Widget _notFound(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Member')),
-      body: const EmptyState(
-        icon: Icons.person_off_outlined,
-        title: 'Member not found',
-        message: 'This member may have been removed from the team.',
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: CircleIconButton(
+                  icon: Icons.arrow_back,
+                  tooltip: 'Back',
+                  onPressed: () => Navigator.maybePop(context),
+                ),
+              ),
+            ),
+            const Expanded(
+              child: EmptyState(
+                icon: Icons.person_off_outlined,
+                title: 'Member not found',
+                message: 'This member may have been removed from the team.',
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  List<Widget> _taskRows(
-    BuildContext context,
-    AppState state,
-    List<Task> tasks,
-  ) {
+  List<Widget> _taskCards(BuildContext context, AppState state, List<Task> tasks) {
     return <Widget>[
-      for (final Task t in tasks)
-        _TaskRow(
+      for (final Task t in tasks) ...<Widget>[
+        _TaskCard(
           task: t,
           status: state.statusOf(t),
           onTap: () => Navigator.pushNamed(
@@ -110,6 +149,8 @@ class MemberDetailScreen extends StatelessWidget {
             arguments: t.id,
           ),
         ),
+        _gap(10),
+      ],
     ];
   }
 }
@@ -123,35 +164,28 @@ class MemberDetailScreen extends StatelessWidget {
 /// so using one for horizontal spacing silently butts two widgets together.
 Widget _gap([double size = 16]) => SizedBox(width: size, height: size);
 
-/// "just now", "5m ago", "2h ago", "3d ago", then a short date.
-String _timeAgo(DateTime at) {
-  final Duration d = DateTime.now().difference(at);
-  if (d.inMinutes < 1) return 'just now';
-  if (d.inMinutes < 60) return '${d.inMinutes}m ago';
-  if (d.inHours < 24) return '${d.inHours}h ago';
-  if (d.inDays < 7) return '${d.inDays}d ago';
-  return '${at.day}/${at.month}/${at.year}';
-}
 
-/// Same section-card pattern the Dashboard uses
-Widget _section({required String title, required Widget child}) {
-  final Widget heading = Text(
-    title,
-    style: const TextStyle(
-      fontSize: 15,
-      fontWeight: FontWeight.w700,
-      color: AppColors.ink,
-    ),
-  );
+Widget _heading(String text) => Text(
+      text,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.ink),
+    );
 
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: AppTheme.cardDecoration,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[heading, _gap(12), child],
-    ),
-  );
+/// "Due in 2 days", "Due in 18 hours", "Overdue by 1 day" or "Completed".
+String _dueLabel(Task task, SlaStatus status) {
+  if (status == SlaStatus.completed) return 'Completed';
+
+  final Duration diff = task.dueDate.difference(DateTime.now());
+  final bool late = diff.isNegative;
+  final Duration abs = late ? -diff : diff;
+
+  final String span;
+  if (abs.inHours < 24) {
+    final int h = abs.inHours < 1 ? 1 : abs.inHours;
+    span = '$h ${h == 1 ? 'hour' : 'hours'}';
+  } else {
+    span = '${abs.inDays} ${abs.inDays == 1 ? 'day' : 'days'}';
+  }
+  return late ? 'Overdue by $span' : 'Due in $span';
 }
 
 /// One quiet grey line, used wherever a section has nothing to show.
@@ -171,56 +205,65 @@ class _MutedText extends StatelessWidget {
 
 // ================================================================ the widgets
 
-/// User Avatar, name, role, email
+/// Centred avatar, name, role pill, email and the "Assign task" button.
 class _HeaderCard extends StatelessWidget {
-  const _HeaderCard({required this.member});
+  const _HeaderCard({required this.member, required this.onAssign});
 
   final Member member;
+  final VoidCallback onAssign;
 
   @override
   Widget build(BuildContext context) {
-    final Widget avatar = CircleAvatar(
-      radius: 28,
-      backgroundColor: AppColors.primary,
+    final Widget rolePill = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.primarySoft,
+        borderRadius: BorderRadius.circular(999),
+      ),
       child: Text(
-        member.initials,
+        member.role,
         style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: AppColors.primary,
         ),
       ),
     );
 
-    final Widget who = Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            member.name,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.ink,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(member.role, style: const TextStyle(fontSize: 13, color: AppColors.muted)),
-          if (member.email.isNotEmpty)
-            Text(member.email, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
-        ],
-      ),
-    );
-
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: AppTheme.cardDecoration,
-      child: Row(children: <Widget>[avatar, _gap(14), who]),
+      child: Column(
+        children: <Widget>[
+          MemberAvatar(member: member, size: 88),
+          _gap(12),
+          Text(
+            member.name,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: AppColors.ink),
+          ),
+          _gap(8),
+          rolePill,
+          if (member.email.isNotEmpty) ...<Widget>[
+            _gap(8),
+            Text(member.email, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+          ],
+          _gap(16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onAssign,
+              icon: const Icon(Icons.add, size: 20),
+              label: const Text('Assign task'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-/// The four SLA counts, colour-coded like every other SLA surface.
+/// The four SLA counts as pastel cards, colour-coded like every SLA surface.
 class _StatusRow extends StatelessWidget {
   const _StatusRow({required this.state, required this.tasks});
 
@@ -234,86 +277,65 @@ class _StatusRow extends StatelessWidget {
       for (final SlaStatus s in SlaStatus.values) s: 0,
     };
     for (final Task t in tasks) {
-      counts[state.statusOf(t)] = counts[state.statusOf(t)]! + 1;
+      final SlaStatus s = state.statusOf(t);
+      counts[s] = counts[s]! + 1;
     }
 
-    return Row(
-      children: <Widget>[
-        _StatusPill(
-          label: 'On Track',
-          value: counts[SlaStatus.onTrack]!,
-          color: AppColors.onTrack,
-          soft: AppColors.onTrackSoft,
-        ),
-        _gap(8),
-        _StatusPill(
-          label: 'At Risk',
-          value: counts[SlaStatus.atRisk]!,
-          color: AppColors.atRisk,
-          soft: AppColors.atRiskSoft,
-        ),
-        _gap(8),
-        _StatusPill(
-          label: 'Overdue',
-          value: counts[SlaStatus.overdue]!,
-          color: AppColors.overdue,
-          soft: AppColors.overdueSoft,
-        ),
-        _gap(8),
-        _StatusPill(
-          label: 'Done',
-          value: counts[SlaStatus.completed]!,
-          color: AppColors.completed,
-          soft: AppColors.completedSoft,
-        ),
-      ],
-    );
+    // Done last, because that is the order a reader expects.
+    const List<(SlaStatus, String)> order = <(SlaStatus, String)>[
+      (SlaStatus.onTrack, 'On track'),
+      (SlaStatus.atRisk, 'At risk'),
+      (SlaStatus.overdue, 'Overdue'),
+      (SlaStatus.completed, 'Done'),
+    ];
+
+    final List<Widget> cards = <Widget>[];
+    for (int i = 0; i < order.length; i++) {
+      final (SlaStatus status, String label) = order[i];
+      if (i > 0) cards.add(const SizedBox(width: 8));
+      cards.add(Expanded(child: _StatusCard(label: label, value: counts[status]!, status: status)));
+    }
+
+    return Row(children: cards);
   }
 }
 
-class _StatusPill extends StatelessWidget {
-  const _StatusPill({
-    required this.label,
-    required this.value,
-    required this.color,
-    required this.soft,
-  });
+class _StatusCard extends StatelessWidget {
+  const _StatusCard({required this.label, required this.value, required this.status});
 
   final String label;
   final int value;
-  final Color color;
-  final Color soft;
+  final SlaStatus status;
 
   @override
   Widget build(BuildContext context) {
-    final Widget number = Text(
-      '$value',
-      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: color),
-    );
-
-    final Widget caption = Text(
-      label,
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color),
-    );
-
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(color: soft, borderRadius: BorderRadius.circular(10)),
-        child: Column(children: <Widget>[number, const SizedBox(height: 2), caption]),
+    final Color text = slaForeground(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: AppTheme.pastelCard(slaBackground(status)),
+      child: Column(
+        children: <Widget>[
+          Text(
+            '$value',
+            style: TextStyle(fontSize: 24, height: 1, fontWeight: FontWeight.w700, color: text),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: text),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// One task of this member: title, SLA badge, due date, progress.
-class _TaskRow extends StatelessWidget {
-  const _TaskRow({
-    required this.task,
-    required this.status,
-    required this.onTap,
-  });
+/// One task of this member as a pastel card filled with its SLA colour:
+/// status pill, priority pill, title, project, due label and progress.
+class _TaskCard extends StatelessWidget {
+  const _TaskCard({required this.task, required this.status, required this.onTap});
 
   final Task task;
   final SlaStatus status;
@@ -321,96 +343,73 @@ class _TaskRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String due = 'due '
-        '${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}';
+    final Color text = slaForeground(status);
 
-    final Widget titleRow = Row(
+    final Widget pills = Row(
       children: <Widget>[
-        Expanded(
+        SlaBadge(status: status, dense: true, onColor: true),
+        const Spacer(),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(999),
+          ),
           child: Text(
-            task.title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.ink,
-            ),
+            task.priority.label,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: text),
           ),
         ),
-        SlaBadge(status: status, dense: true),
       ],
     );
 
-    final Widget progressBar = Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(999),
-        child: SizedBox(
-          height: 6,
-          child: LinearProgressIndicator(
-            value: (task.progress / 100).clamp(0.0, 1.0),
-            backgroundColor: AppColors.border,
-            valueColor: AlwaysStoppedAnimation<Color>(slaForeground(status)),
+    final Widget progress = Row(
+      children: <Widget>[
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: SizedBox(
+              height: 6,
+              child: LinearProgressIndicator(
+                value: (task.progress / 100).clamp(0.0, 1.0),
+                backgroundColor: Colors.white,
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.black),
+              ),
+            ),
           ),
         ),
-      ),
+        const SizedBox(width: 8),
+        Text('${task.progress}%', style: TextStyle(fontSize: 11, color: text)),
+      ],
     );
 
-    final Widget row = Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          titleRow,
-          const SizedBox(height: 4),
-          Text(
-            '${task.project} - $due',
-            style: const TextStyle(fontSize: 12, color: AppColors.muted),
-          ),
-          const SizedBox(height: 8),
-          Row(
+    return Material(
+      color: slaBackground(status),
+      borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              progressBar,
-              _gap(8),
-              Text('${task.progress}%', style: const TextStyle(fontSize: 11, color: AppColors.muted)),
+              pills,
+              const SizedBox(height: 12),
+              Text(
+                task.title,
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: text),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '${task.project}  ·  ${_dueLabel(task, status)}',
+                style: TextStyle(fontSize: 12, color: text),
+              ),
+              const SizedBox(height: 12),
+              progress,
             ],
           ),
-        ],
-      ),
-    );
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: AppTheme.cardDecoration,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: row,
         ),
-      ),
-    );
-  }
-}
-
-/// One line of this member's trail
-class _TrailRow extends StatelessWidget {
-  const _TrailRow({required this.activity});
-
-  final Activity activity;
-
-  @override
-  Widget build(BuildContext context) {
-    final Widget dot = const Icon(Icons.circle, size: 8, color: AppColors.primary);
-
-    final Widget message = Expanded(
-      child: Text(activity.message, style: const TextStyle(fontSize: 13)),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[dot, _gap(10), message, _gap(8), Text(_timeAgo(activity.at), style: const TextStyle(fontSize: 12, color: AppColors.muted))],
       ),
     );
   }
