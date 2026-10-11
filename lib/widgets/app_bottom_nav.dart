@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../routes.dart';
+import '../theme/app_colors.dart';
 
-/// The four-tab navigation bar shared by every top-level screen.
+/// The floating black pill that sits at the bottom of every top-level screen.
+
 class AppBottomNav extends StatelessWidget {
   const AppBottomNav({super.key, required this.currentIndex});
 
@@ -18,10 +20,10 @@ class AppBottomNav extends StatelessWidget {
   ];
 
   static const List<IconData> _activeIcons = <IconData>[
-    Icons.home,
-    Icons.checklist,
-    Icons.groups,
-    Icons.person,
+    Icons.home_rounded,
+    Icons.checklist_rounded,
+    Icons.groups_rounded,
+    Icons.person_rounded,
   ];
 
   static const List<String> _routes = <String>[
@@ -33,18 +35,56 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      selectedIndex: currentIndex,
-      onDestinationSelected: (int index) {
-        if (index == currentIndex) return;
-        Navigator.pushReplacementNamed(context, _routes[index]);
-      },
-      destinations: List<Widget>.generate(
-        4,
-        (int i) => NavigationDestination(
-          icon: Icon(_icons[i]),
-          selectedIcon: Icon(_activeIcons[i]),
-          label: _labels[i],
+    return Material(
+      color: Colors.transparent,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 6, 24, 12),
+          child: Container(
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: AppColors.black,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List<Widget>.generate(4, _button),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _button(int i) {
+    final bool active = i == currentIndex;
+    return Builder(
+      builder: (BuildContext context) => Semantics(
+        button: true,
+        selected: active,
+        label: _labels[i],
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            if (active) return;
+            Navigator.pushReplacementNamed(context, _routes[i]);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: active ? AppColors.primary : const Color(0xFF2A2A2A),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              active ? _activeIcons[i] : _icons[i],
+              size: 22,
+              color: active ? Colors.white : const Color(0xFFB5B5C0),
+            ),
+          ),
         ),
       ),
     );

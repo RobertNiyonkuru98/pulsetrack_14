@@ -4,162 +4,193 @@ import 'package:provider/provider.dart';
 import '../data/models/activity.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
+import '../widgets/activity_tile.dart';
+import '../widgets/circle_icon_button.dart';
 import '../widgets/empty_state.dart';
 
 /// Activity Log. OWNER: Admire.
 ///
-/// The full audit trail of all member activity
-///
-class ActivityLogScreen extends StatelessWidget {
+/// The full audit trail of all member activity.
+/// 
+class ActivityLogScreen extends StatefulWidget {
   const ActivityLogScreen({super.key});
+
+  @override
+  State<ActivityLogScreen> createState() => _ActivityLogScreenState();
+}
+
+class _ActivityLogScreenState extends State<ActivityLogScreen> {
+  /// null = "All".
+  ActivityType? _filter;
+
+  static const List<(String, ActivityType?)> _chips = <(String, ActivityType?)>[
+    ('All', null),
+    ('Status', ActivityType.statusChanged),
+    ('Created', ActivityType.created),
+    ('Assigned', ActivityType.assigned),
+    ('Completed', ActivityType.completed),
+    ('Updated', ActivityType.updated),
+  ];
+
+  /// "Today", "Yesterday" or "Earlier" for a time stamp.
+  String _groupOf(DateTime at) {
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+    final DateTime day = DateTime(at.year, at.month, at.day);
+    final int diff = today.difference(day).inDays;
+    if (diff <= 0) return 'Today';
+    if (diff == 1) return 'Yesterday';
+    return 'Earlier';
+  }
 
   @override
   Widget build(BuildContext context) {
     final AppState state = context.watch<AppState>();
 
     if (state.loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final Widget body;
-    if (state.activity.isEmpty) {
-      body = const EmptyState(
-        icon: Icons.history_toggle_off,
-        title: 'No activity yet',
-        message: 'Create or update a task and it will appear here.',
-      );
-    } else {
-      body = ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: state.activity.length,
-        separatorBuilder: (BuildContext context, int index) => _gap(10),
-        itemBuilder: (BuildContext context, int index) {
-          final Activity a = state.activity[index];
-          return _ActivityTile(
-            activity: a,
-            initials: state.memberById(a.memberId)?.initials ?? '?',
-          );
-        },
-      );
-    }
-
-    final Widget refreshButton = IconButton(
-      tooltip: 'Refresh',
-      icon: const Icon(Icons.refresh),
-      onPressed: () => state.refresh(),
-    );
+    final List<Activity> visible = state.activity
+        .where((Activity a) => _filter == null || a.type == _filter)
+        .toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Activity Log'),
-        actions: <Widget>[refreshButton],
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _topBar(context, state),
+            _headline(),
+            _chipRow(),
+            const SizedBox(height: 8),
+            Expanded(child: _list(state, visible)),
+          ],
+        ),
       ),
-      body: body,
     );
   }
-}
 
-Widget _gap([double height = 16]) => SizedBox(height: height);
-
-/// "just now", "5m ago", "2h ago", "3d ago", then a short date.
-String _timeAgo(DateTime at) {
-  final Duration d = DateTime.now().difference(at);
-  if (d.inMinutes < 1) return 'just now';
-  if (d.inMinutes < 60) return '${d.inMinutes}m ago';
-  if (d.inHours < 24) return '${d.inHours}h ago';
-  if (d.inDays < 7) return '${d.inDays}d ago';
-  return '${at.day}/${at.month}/${at.year}';
-}
-
-/// avatar, message, type chip, time stamp.
-class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({required this.activity, required this.initials});
-
-  final Activity activity;
-  final String initials;
-
-  IconData get _icon => switch (activity.type) {
-        ActivityType.created => Icons.add_circle_outline,
-        ActivityType.assigned => Icons.person_add_alt_outlined,
-        ActivityType.statusChanged => Icons.swap_vert,
-        ActivityType.completed => Icons.check_circle_outline,
-        ActivityType.updated => Icons.edit_outlined,
-      };
-
-  Color get _color => switch (activity.type) {
-        ActivityType.created => AppColors.primary,
-        ActivityType.assigned => AppColors.primary,
-        ActivityType.statusChanged => AppColors.atRisk,
-        ActivityType.completed => AppColors.onTrack,
-        ActivityType.updated => AppColors.muted,
-      };
-
-  String get _label => switch (activity.type) {
-        ActivityType.created => 'Created',
-        ActivityType.assigned => 'Assigned',
-        ActivityType.statusChanged => 'Status',
-        ActivityType.completed => 'Completed',
-        ActivityType.updated => 'Updated',
-      };
-
-  @override
-  Widget build(BuildContext context) {
-    final Widget avatar = CircleAvatar(
-      radius: 18,
-      backgroundColor: AppColors.border.withValues(alpha: 0.5),
-      child: Text(
-        initials,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: AppColors.ink,
-        ),
-      ),
-    );
-
-    final Widget message = Text(
-      activity.message,
-      style: const TextStyle(fontSize: 13, color: AppColors.ink),
-    );
-
-    final Widget typeChip = Row(
-      children: <Widget>[
-        Icon(_icon, size: 14, color: _color),
-        const SizedBox(width: 4),
-        Text(
-          _label,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _color),
-        ),
-      ],
-    );
-
-    final Widget stamp = Flexible(
-      child: Text(
-        _timeAgo(activity.at),
-        style: const TextStyle(fontSize: 11, color: AppColors.muted),
-      ),
-    );
-
-    final Widget text = Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[message, const SizedBox(height: 6), Row(children: <Widget>[typeChip, _gap(8), stamp])],
-      ),
-    );
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
+  Widget _topBar(BuildContext context, AppState state) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[avatar, _gap(12), text],
+        children: <Widget>[
+          CircleIconButton(
+            icon: Icons.arrow_back,
+            tooltip: 'Back',
+            onPressed: () => Navigator.maybePop(context),
+          ),
+          const Spacer(),
+          CircleIconButton(
+            icon: Icons.refresh,
+            tooltip: 'Refresh',
+            onPressed: () => state.refresh(),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _headline() {
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 12),
+      child: Text.rich(
+        TextSpan(
+          children: <InlineSpan>[
+            TextSpan(
+              text: 'Recent ',
+              style: TextStyle(fontWeight: FontWeight.w300, color: Color(0xFFAAAAB5)),
+            ),
+            TextSpan(
+              text: 'activity',
+              style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink),
+            ),
+          ],
+        ),
+        style: TextStyle(fontSize: 34, height: 1.1),
+      ),
+    );
+  }
+
+  Widget _chipRow() {
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: _chips.length,
+        separatorBuilder: (BuildContext context, int index) => const SizedBox(width: 8),
+        itemBuilder: (BuildContext context, int index) {
+          final (String label, ActivityType? type) = _chips[index];
+          final bool selected = _filter == type;
+          return ChoiceChip(
+            label: Text(label),
+            selected: selected,
+            showCheckmark: false,
+            labelStyle: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: selected ? Colors.white : AppColors.ink,
+            ),
+            selectedColor: AppColors.black,
+            backgroundColor: AppColors.surface,
+            onSelected: (_) => setState(() => _filter = type),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _list(AppState state, List<Activity> visible) {
+    if (visible.isEmpty) {
+      return EmptyState(
+        icon: Icons.history_toggle_off,
+        title: _filter == null ? 'No activity yet' : 'Nothing matches this filter',
+        message: _filter == null
+            ? 'Create or update a task and it will appear here.'
+            : 'Try a different filter.',
+        action: _filter == null
+            ? null
+            : OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(160, 48)),
+                onPressed: () => setState(() => _filter = null),
+                child: const Text('Clear filter'),
+              ),
+      );
+    }
+
+    final List<Widget> rows = <Widget>[];
+    String? lastGroup;
+    for (final Activity a in visible) {
+      final String group = _groupOf(a.at);
+      if (group != lastGroup) {
+        rows.add(Padding(
+          padding: const EdgeInsets.only(top: 14, bottom: 8),
+          child: Text(
+            group.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+              color: AppColors.muted,
+            ),
+          ),
+        ));
+        lastGroup = group;
+      }
+      rows.add(Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: ActivityTile(
+          activity: a,
+          initials: state.memberById(a.memberId)?.initials ?? '?',
+        ),
+      ));
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      children: rows,
     );
   }
 }

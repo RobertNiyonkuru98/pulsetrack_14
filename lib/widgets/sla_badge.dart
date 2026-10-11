@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import '../data/models/sla_status.dart';
 import '../theme/app_colors.dart';
 
-/// The solid colour of an SLA status (text + dot).
+
 Color slaForeground(SlaStatus status) {
   switch (status) {
     case SlaStatus.onTrack:
-      return AppColors.onTrack;
+      return AppColors.onTrackText;
     case SlaStatus.atRisk:
-      return AppColors.atRisk;
+      return AppColors.atRiskText;
     case SlaStatus.overdue:
-      return AppColors.overdue;
+      return AppColors.overdueText;
     case SlaStatus.completed:
-      return AppColors.completed;
+      return AppColors.completedText;
   }
 }
 
-/// The soft tinted background behind the badge.
+
 Color slaBackground(SlaStatus status) {
   switch (status) {
     case SlaStatus.onTrack:
@@ -31,12 +31,17 @@ Color slaBackground(SlaStatus status) {
   }
 }
 
-/// The pill badge used everywhere a status is shown.
 class SlaBadge extends StatelessWidget {
-  const SlaBadge({super.key, required this.status, this.dense = false});
+  const SlaBadge({
+    super.key,
+    required this.status,
+    this.dense = false,
+    this.onColor = false,
+  });
 
   final SlaStatus status;
   final bool dense;
+  final bool onColor;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +52,7 @@ class SlaBadge extends StatelessWidget {
         vertical: dense ? 3 : 5,
       ),
       decoration: BoxDecoration(
-        color: slaBackground(status),
+        color: onColor ? Colors.white : slaBackground(status),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
