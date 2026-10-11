@@ -19,7 +19,7 @@ import '../logic/sla_engine.dart';
 ///
 /// Screens never touch the database directly. They call AppState, which talks
 /// to the repositories and then calls notifyListeners() so every screen using
-/// context.watch<AppState>() rebuilds.
+/// `context.watch<AppState>()` rebuilds.
 class AppState extends ChangeNotifier {
   AppState({
     MemberRepository? members,

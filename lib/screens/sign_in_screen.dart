@@ -23,7 +23,12 @@ class SignInScreen extends StatefulWidget {
   State<SignInScreen> createState() => _SignInScreenState();
 }
 
-Widget _gap([double height = 16]) => SizedBox(height: height);
+/// A spacer that works in both directions: `size` wide inside a Row and `size`
+/// tall inside a Column, so the same helper reads the same way in either layout.
+///
+/// It must set **both** dimensions. A `SizedBox(height: n)` has a width of zero,
+/// so using one for horizontal spacing silently butts two widgets together.
+Widget _gap([double size = 16]) => SizedBox(width: size, height: size);
 
 class _SignInScreenState extends State<SignInScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();

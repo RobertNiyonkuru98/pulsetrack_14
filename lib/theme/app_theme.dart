@@ -1,125 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
 /// One place for the app's look and feel.
-///
 class AppTheme {
   const AppTheme._();
 
-  static const double cardRadius = 24;
-  static const double sheetRadius = 32;
-  static const double fieldRadius = 16;
-
   static ThemeData get light {
-    final ColorScheme scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: Brightness.light,
-    ).copyWith(
-      primary: AppColors.primary,
-      surface: AppColors.surface,
-      onSurface: AppColors.ink,
-      error: AppColors.overdue,
-    );
-    final ThemeData base = ThemeData(useMaterial3: true, colorScheme: scheme);
-
-    const StadiumBorder pill = StadiumBorder();
-    final OutlineInputBorder noBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(fieldRadius),
-      borderSide: BorderSide.none,
+    final ThemeData base = ThemeData(
+      useMaterial3: true,
+      colorSchemeSeed: AppColors.primary,
     );
 
     return base.copyWith(
       scaffoldBackgroundColor: AppColors.background,
-      textTheme: GoogleFonts.plusJakartaSansTextTheme(base.textTheme).apply(
-        bodyColor: AppColors.ink,
-        displayColor: AppColors.ink,
-      ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.ink,
         elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        titleTextStyle: GoogleFonts.plusJakartaSans(
+        centerTitle: false,
+        titleTextStyle: TextStyle(
           color: AppColors.ink,
-          fontSize: 16,
+          fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.neutral,
-        border: noBorder,
-        enabledBorder: noBorder,
-        focusedBorder: noBorder.copyWith(
+        fillColor: AppColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
-        errorBorder: noBorder.copyWith(
-          borderSide: const BorderSide(color: AppColors.overdue, width: 1.5),
-        ),
-        focusedErrorBorder: noBorder.copyWith(
-          borderSide: const BorderSide(color: AppColors.overdue, width: 1.5),
-        ),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.black,
-          foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52),
-          shape: pill,
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.black,
-          foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52),
-          elevation: 0,
-          shape: pill,
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.ink,
-          side: const BorderSide(color: AppColors.black),
-          minimumSize: const Size.fromHeight(52),
-          shape: pill,
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.overdue),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.accent,
         foregroundColor: Colors.white,
-        elevation: 0,
-        shape: CircleBorder(),
-      ),
-      chipTheme: base.chipTheme.copyWith(
-        shape: pill,
-        side: BorderSide.none,
-        backgroundColor: AppColors.surface,
-        selectedColor: AppColors.primary,
-      ),
-      dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      ),
-      snackBarTheme: SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       dividerTheme: const DividerThemeData(color: AppColors.border, thickness: 1),
     );
   }
 
-  /// The card used all over the app: white, 24px radius, no border.
+  /// Corner radius of the app's cards.
+  static const double cardRadius = 20;
+
+  /// Corner radius of the sheets and modals on Admire's screens.
+  static const double sheetRadius = 32;
+
+  /// The card used across the app. Figma draws cards as pure white with a
+  /// generous corner radius and a soft shadow - no outline - which is what lets
+  /// them float on the warm off-white page background.
   static BoxDecoration get cardDecoration => BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(cardRadius),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(
+            color: Color(0x0F1C1B1B),
+            blurRadius: 18,
+            offset: Offset(0, 8),
+          ),
+        ],
       );
 
-  /// The same card filled with a pastel colour (SLA cards, KPI cards).
+  /// The same card, but filled with a pastel colour. Admire's SLA and KPI cards
+  /// are a solid tint rather than white-with-a-shadow, so they use this.
   static BoxDecoration pastelCard(Color fill) => BoxDecoration(
         color: fill,
         borderRadius: BorderRadius.circular(cardRadius),
