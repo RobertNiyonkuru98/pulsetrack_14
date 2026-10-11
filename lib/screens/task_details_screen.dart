@@ -7,6 +7,7 @@ import '../data/models/task.dart';
 import '../logic/sla_engine.dart';
 import '../routes.dart';
 import '../state/app_state.dart';
+import '../theme/app_colors.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   const TaskDetailsScreen({super.key, this.taskId});
@@ -211,7 +212,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
               children: [
                 CircleAvatar(
                   radius: 14,
-                  backgroundColor: const Color(0xFF1D3B8B),
+                  backgroundColor: AppColors.primary,
                   child: Text(
                     assignee?.initials ?? '?',
                     style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
@@ -298,7 +299,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundColor: const Color(0xFF1D3B8B),
+                        backgroundColor: AppColors.primary,
                         child: Text(
                           assignee?.initials ?? '?',
                           style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
@@ -330,7 +331,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                const Icon(Icons.check_circle_rounded, size: 16, color: Color(0xFF3B82F6)),
+                                const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.primary),
                               ],
                             ),
                             Text(
@@ -352,7 +353,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF5B47FB),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(18),
                           ),
                           child: Column(
@@ -641,7 +642,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         child: const Text(
                           'Add Note',
                           style: TextStyle(
-                            color: Color(0xFF5B47FB),
+                            color: AppColors.primary,
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),

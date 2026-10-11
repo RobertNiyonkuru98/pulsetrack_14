@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../data/models/task.dart';
 import '../state/app_state.dart';
+import '../theme/app_colors.dart';
 
 class TaskFormScreen extends StatefulWidget {
   const TaskFormScreen({super.key, this.taskId});
@@ -136,7 +137,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             padding: const EdgeInsets.only(right: 14.0),
             child: CircleAvatar(
               radius: 16,
-              backgroundColor: const Color(0xFF1D3B8B),
+              backgroundColor: AppColors.primary,
               child: Text(
                 state.currentUser?.initials ?? 'PT',
                 style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
@@ -215,7 +216,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Color(0xFF5B47FB), width: 1.5),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -257,7 +258,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Color(0xFF5B47FB), width: 1.5),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                   ),
                 ),
                 onSaved: (val) => _description = val ?? '',
@@ -287,7 +288,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                         value: proj,
                         child: Row(
                           children: [
-                            const Icon(Icons.dashboard_customize_outlined, size: 18, color: Color(0xFF5B47FB)),
+                            const Icon(Icons.dashboard_customize_outlined, size: 18, color: AppColors.primary),
                             const SizedBox(width: 10),
                             Text(
                               proj,
@@ -334,7 +335,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                           children: [
                             CircleAvatar(
                               radius: 14,
-                              backgroundColor: const Color(0xFF1D3B8B),
+                              backgroundColor: AppColors.primary,
                               child: Text(
                                 m.initials,
                                 style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
@@ -423,7 +424,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                           Icon(
                             Icons.calendar_today_outlined,
                             size: 18,
-                            color: isPastDate ? const Color(0xFFEF4444) : const Color(0xFF5B47FB),
+                            color: isPastDate ? const Color(0xFFEF4444) : AppColors.primary,
                           ),
                           const SizedBox(width: 12),
                           Text(
@@ -508,7 +509,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                     icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF64748B)),
                     items: TaskStatus.values.map((s) {
                       Color dotColor = Colors.grey;
-                      if (s == TaskStatus.todo) dotColor = const Color(0xFF3B82F6);
+                      if (s == TaskStatus.todo) dotColor = AppColors.primary;
                       if (s == TaskStatus.inProgress) dotColor = const Color(0xFFF59E0B);
                       if (s == TaskStatus.blocked) dotColor = const Color(0xFFEF4444);
                       if (s == TaskStatus.completed) dotColor = const Color(0xFF10B981);
@@ -704,7 +705,7 @@ class _ProgressOptionButton extends StatelessWidget {
           color: isSelected ? const Color(0xFFF1F5F9) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF5B47FB) : const Color(0xFFE2E8F0),
+            color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -714,7 +715,7 @@ class _ProgressOptionButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-            color: isSelected ? const Color(0xFF5B47FB) : const Color(0xFF64748B),
+            color: isSelected ? AppColors.primary : const Color(0xFF64748B),
           ),
         ),
       ),

@@ -5,6 +5,7 @@ import '../data/models/sla_status.dart';
 import '../data/models/task.dart';
 import '../routes.dart';
 import '../state/app_state.dart';
+import '../theme/app_colors.dart';
 
 class TaskTile extends StatelessWidget {
   const TaskTile({
@@ -215,7 +216,7 @@ class TaskTile extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 12,
-                          backgroundColor: const Color(0xFF1D3B8B),
+                          backgroundColor: AppColors.primary,
                           child: Text(
                             assignee?.initials ?? '?',
                             style: const TextStyle(
