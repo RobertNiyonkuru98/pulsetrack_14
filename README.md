@@ -6,7 +6,7 @@
 
 ---
 
-## 1. What PulseTrack Actually Does (In Plain English)
+## 1. What PulseTrack Actually Does
 
 Most to-do apps are dumb countdown timers. They let you write down a task, give it a due date, and then do nothing until you miss the deadline and the text turns red. By then, it is already too late.
 
